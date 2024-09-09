@@ -24,7 +24,7 @@ struct OdebaseNode
     # for now, rational (remove when not in script)
     polRing::QQMPolyRing
 end
-odebaseSystems=OdebaseNode[]
+global odebaseSystems=OdebaseNode[]
 # The initial values for rejects are defined by those systems that have a parameter to the power of another parameter (eg k1^k2)
 # We do not save these as .jl file to begin with as of right now
 
