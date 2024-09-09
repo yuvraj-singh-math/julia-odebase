@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Download in Reduce format
+for folders in ~/Downloads/odebase/*; do
+odes=$(cat $folders/odes.txt | sed -e "s/{//" | sed -e "s/}//" | sed -e "s/.*= //" | tr "\n" " ")
+constraints=$(cat $folders/constraints.txt | sed -e "s/{//" | sed -e "s/}//" | sed -e "s/=/-/" | tr "\n" " ")
+name=$(basename $folders)
+juliaScript="# scraped from ODEBASE, all credit goes to them\nusing Oscar;\nparamsRing,($(cat $folders/parameters.txt | sed -e "s/ .*//" |tr "\n" ","))=rational_function_field(QQ,[$(cat $folders/parameters.txt | sed -e "s/ .*//" | tr "\n" "," | sed -e "s/,/\",\"/g" | sed -e  "s/^/\"/" | sed -e "s/$/\"/")])\npolRing,($(cat $folders/species_map.txt| sed -e "s/ .*//" | tr "\n" ","))=polynomial_ring(paramsRing,[$(cat $folders/species_map.txt| sed -e "s/ .*//" | tr "\n" "," | sed -e "s/,/\",\"/g" | sed -e  "s/^/\"/" | sed -e "s/$/\"/")])\nchemSystem=[$odes]\nconstraints=[$constraints]\nname=\"$name\"\n"
+echo -e $juliaScript > odes/$name.jl
+done
