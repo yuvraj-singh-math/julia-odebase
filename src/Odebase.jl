@@ -1,7 +1,7 @@
 module Odebase
 export odebaseSystems
 using Oscar;
-const dir = Base.pkgdir(odebase)
+const dir = Base.pkgdir(Odebase)
 chems=readdir(joinpath(dir,"src/odes/"),join=true)
 # these filters are mostly hacky workarounds
 #chems=filter(filename->occursin(".jl",filename)&&(!occursin("odebase.jl",filename))&&(!occursin("rejects.jl",filename))&&(!occursin("matrix",filename))&&!occursin("#",filename),chems)
