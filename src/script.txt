@@ -1,10 +1,49 @@
-#!/usr/bin/env bash
-
 # Download in Reduce format
-for folders in ~/Downloads/odebase/*; do
-odes=$(cat $folders/odes.txt | sed -e "s/{//" | sed -e "s/}//" | sed -e "s/.*= //" | tr "\n" " ")
-constraints=$(cat $folders/constraints.txt | sed -e "s/{//" | sed -e "s/}//" | sed -e "s/=/-/" | tr "\n" " ")
-name=$(basename $folders)
-juliaScript="# scraped from ODEBASE, all credit goes to them\nusing Oscar;\nparamsRing,($(cat $folders/parameters.txt | sed -e "s/ .*//" |tr "\n" ","))=rational_function_field(QQ,[$(cat $folders/parameters.txt | sed -e "s/ .*//" | tr "\n" "," | sed -e "s/,/\",\"/g" | sed -e  "s/^/\"/" | sed -e "s/$/\"/")])\npolRing,($(cat $folders/species_map.txt| sed -e "s/ .*//" | tr "\n" ","))=polynomial_ring(paramsRing,[$(cat $folders/species_map.txt| sed -e "s/ .*//" | tr "\n" "," | sed -e "s/,/\",\"/g" | sed -e  "s/^/\"/" | sed -e "s/$/\"/")])\nchemSystem=[$odes]\nconstraints=[$constraints]\nname=\"$name\"\n"
+n=1325
+#<1986
+while [ $n -le 1987 ]; do
+url="https://www.odebase.org/detail/$n"
+html=$(curl -s $url)
+
+id=$(echo "$html" | sed  '7q;d' | sed  's/^.*; //' | sed  's/:.*//')
+dir="/home/main/Downloads/odebase/$id"
+if [ -d $dir ]; then
+desc=$(echo "$html" | sed  '7q;d' | sed  's/^.*: //')
+irr=$(echo "$html" | sed  '91q;d' | sed  's/^.*<\/strong> //' | sed  's/<\/p>*//')
+rev=$(echo "$html" | sed  '92q;d' | sed  's/^.*<\/strong> //' | sed  's/<\/p>*//')
+def=$(echo "$html" | sed  '93q;d' | sed  's/^.*<\/strong> //' | sed  's/<\/p>*//')
+
+if [ "$(echo "$html" |sed  '96q;d' | sed  's/^.*<\/strong> //' | sed  's/<\/p>*//')" = "Yes" ]; then
+	rat=true
+else
+	rat=false
+fi
+
+if [ "$(echo "$html" |sed  '97q;d' | sed  's/^.*<\/strong> //' | sed  's/<\/p>*//')" = "Yes" ]; then
+	pol=true
+else
+	pol=false
+fi
+
+
+if [ "$(echo "$html" |sed  '98q;d' | sed  's/^.*<\/strong> //' | sed  's/<\/p>*//')" = "Yes" ]; then
+	mass=true
+else
+	mass=false
+fi
+
+odes=$(cat $dir/odes.txt | sed -e "s/{//" | sed -e "s/}//" | sed -e "s/.*= //" | tr "\n" " " | sed -E "s/([0-9])\/([0-9])/\1\/\/\2/g")
+constraints=$(cat $dir/constraints.txt | sed -e "s/{//" | sed -e "s/}//" | sed -e "s/=/-/" | tr "\n" " " | sed -E "s/([0-9])\/([0-9])/\1\/\/\2/g")
+stoMat=$(cat $dir/stoichiometric_matrix.txt | sed -e "s/)\$//" | sed -e "s/mat( //" | sed -e "s/(/[/" | sed -e "s/)/]/" | tr "\n" " " | sed "s/\//\/\//g")
+restoMat=$(cat $dir/reconfigured_stoichiometric_matrix.txt | sed -e "s/)\$//" | sed -e "s/mat( //" | sed -e "s/(/[/" | sed -e "s/)/]/" | tr "\n" " " | sed "s/\//\/\//g")
+kinMat=$(cat $dir/kinetic_matrix.txt | sed -e "s/)\$//" | sed -e "s/mat( //" | sed -e "s/(/[/" | sed -e "s/)/]/" | tr "\n" " " | sed "s/\//\/\//g")
+paramValues=$(cat $dir/parameters.txt | sed -e "s/^.*= //" | sed -e "s/;//" | tr "\n" " " | sed "s/ /,/g" | sed "s/\//\/\//g")
+paramNames=$(cat $dir/parameter_map.txt | sed -e "s/^.*= /\"/" | sed -e "s/$/\"/" | tr "\n" " " | sed "s/ /,/g")
+speciesNames=$(cat $dir/species_map.txt | sed -e "s/^.*= /\"/" | sed -e "s/$/\"/" | tr "\n" " " | sed "s/ /,/g")
+name=$id
+juliaScript="# scraped from ODEBASE, all credit goes to them\nusing Oscar;\nparamsRing,($(cat $dir/parameters.txt | sed -e "s/ .*//" |tr "\n" ","))=rational_function_field(QQ,[$(cat $dir/parameters.txt | sed -e "s/ .*//" | tr "\n" "," | sed -e "s/,/\",\"/g" | sed -e  "s/^/\"/" | sed -e "s/$/\"/")])\npolRing,($(cat $dir/species_map.txt| sed -e "s/ .*//" | tr "\n" ","))=polynomial_ring(paramsRing,[$(cat $dir/species_map.txt| sed -e "s/ .*//" | tr "\n" "," | sed -e "s/,/\",\"/g" | sed -e  "s/^/\"/" | sed -e "s/$/\"/")])\nchemSystem=[$odes]\nconstraints=[$constraints]\nID=\"$name\"\npol=$pol\nmass_bool=$mass\nrev=$rev\nirr=$irr\ndef=$def\nrat=$rat\ndesc=\"$desc\"\nstoichMatrix=[ $stoMat ]\nreconStoichMatrix=[ $restoMat ]\nkineticMatrix=[ $kinMat ]\nparamValues=[ $paramValues ]\nparamNames=[ $paramNames ]\nspeciesNames=[ $speciesNames ] "
 echo -e $juliaScript > odes/$name.jl
+echo $dir
+fi
+n=$(( $n + 1))
 done

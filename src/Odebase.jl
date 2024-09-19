@@ -1,32 +1,33 @@
 module Odebase
 export odebaseSystems
+# TODO remove using Oscar from odebase files
 using Oscar;
 const dir = Base.pkgdir(Odebase)
-chems=readdir(joinpath(dir,"src/odes/"),join=true)
-# these filters are mostly hacky workarounds
-#chems=filter(filename->occursin(".jl",filename)&&(!occursin("odebase.jl",filename))&&(!occursin("rejects.jl",filename))&&(!occursin("matrix",filename))&&!occursin("#",filename),chems)
+const chems=readdir(joinpath(dir,"src/odes/"),join=true)
+const odebaseSystems=[splitext(basename(chem))[1] for chem in chems]
 
 struct OdebaseNode
     ID::String
-    rational::Bool
-    massAction::Bool
-    #? redundant
-    species::Int
-    deficit::Int
+    description::String
     numSpecies::Int
-    # TODO types for the following
-    # \dot{x}_i is set to 0
-    param_polynomial_system::Vector
-    # should replace this with a function soon
-    generic_polynomial_system::Vector
-    constraints::Vector
+    numParams::Int
+    speciesNames::Vector{String}
+    paramNames::Vector{String}
+    numIrr::Int
+    numRev::Int
+    deficiency::Int
+    rational::Bool
+    polynomial::Bool
+    massAction::Bool
     paramsRing
-    # for now, rational (remove when not in script)
-    polRing::QQMPolyRing
+    polRing
+    ODEs::Vector
+    constraints::Vector
+    paramValues::Vector
+    stoichMatrix::QQMatrix
+    reconStoichMatrix::QQMatrix
+    kineticMatrix::QQMatrix
 end
-global odebaseSystems=OdebaseNode[]
-# The initial values for rejects are defined by those systems that have a parameter to the power of another parameter (eg k1^k2)
-# We do not save these as .jl file to begin with as of right now
 
 # we do not want to remove any coefficients entirely
 function rand_nonzero(len::Int)
@@ -41,12 +42,46 @@ function rand_nonzero(len::Int)
     return ints
 end
 
-for file in chems
-    include(file);
-    randCoeff=rand_nonzero(length(gens(paramsRing)));
-    QQpolRing,tup=polynomial_ring(QQ,["$x" for x in gens(polRing)]);
-    phi=hom(polRing,QQpolRing,c->evaluate(c,randCoeff),gens(QQpolRing));
-    # we redefine polRing to be of rational type after the map
-    push!(odebaseSystems, OdebaseNode(name,true,true,1,1,length(gens(polRing)),chemSystem,[phi(x) for x in chemSystem],[],paramsRing,QQpolRing));
+function generic_polynomial_system(sys::OdebaseNode;constraint=true)
+    randCoeff=rand_nonzero(length(gens(sys.paramsRing)));
+    QQpolRing,tup=polynomial_ring(QQ,["$x" for x in gens(sys.polRing)]);
+    phi=hom(sys.polRing,QQpolRing,c->evaluate(c,randCoeff),gens(QQpolRing));
+    if constraint
+        return phi.(union(sys.ODEs,sys.constraints))
+    else
+        return phi.(sys.ODEs)
+    end
 end
+
+function valued_polynomial_system(sys::OdebaseNode;constraint=true)
+    QQpolRing,tup=polynomial_ring(QQ,["$x" for x in gens(sys.polRing)]);
+    phi=hom(sys.polRing,QQpolRing,c->evaluate(c,sys.paramValues),gens(QQpolRing));
+    if constraint
+        return phi.(union(sys.ODEs,sys.constraints))
+    else
+        return phi.(sys.ODEs)
+    end
+end
+
+function get_odebase_system(reqID::String; rename=false)
+    if !(reqID in odebaseSystems)
+        error("Specified ID is not supported")
+        return
+    end
+    index=findfirst(x->x==reqID,odebaseSystems)
+    file=chems[index]
+    include(file);
+    if rename
+        newparams=Oscar.gens(paramsRing)
+        newpols=Oscar.gens(polRing)
+        newparamsRing, newparams = polynomial_ring(base_ring(paramsRing), paramsValues)
+        newpolRing, newpols = polynomial_ring(base_ring(polRing), speciesValues)
+    system=OdebaseNode(ID,desc,length(Oscar.gens(newpolRing)),length(gens(newparamsRing)),speciesNames,paramNames,irr,rev,def,rat,pol,mass_bool,newparamsRing,newpolRing,chemSystem,constraints,paramValues,matrix(QQ,stoichMatrix),matrix(QQ,reconStoichMatrix),matrix(QQ,kineticMatrix));
+    else
+    system=OdebaseNode(ID,desc,length(Oscar.gens(polRing)),length(gens(paramsRing)),speciesNames,paramNames,irr,rev,def,rat,pol,mass_bool,paramsRing,polRing,chemSystem,constraints,paramValues,matrix(QQ,stoichMatrix),matrix(QQ,reconStoichMatrix),matrix(QQ,kineticMatrix));
+    end
+    
+    return system
+end
+
 end # module 
