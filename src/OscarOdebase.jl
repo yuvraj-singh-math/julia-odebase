@@ -1,11 +1,11 @@
-module Odebase
+module OscarOdebase
 export odebaseSystems
 export get_odebase_system
 export generic_polynomial_system
 export valued_polynomial_system
 # TODO remove using Oscar from odebase files
 using Oscar;
-const dir = Base.pkgdir(Odebase)
+const dir = Base.pkgdir(OscarOdebase)
 const chems=readdir(joinpath(dir,"src/odes/"),join=true)
 const odebaseSystems=[splitext(basename(chem))[1] for chem in chems]
 
@@ -83,8 +83,8 @@ function get_odebase_system(reqID::String; rename=false)
     else
     system=OdebaseNode(ID,desc,length(Oscar.gens(polRing)),length(gens(paramsRing)),speciesNames,paramNames,irr,rev,def,rat,pol,mass_bool,paramsRing,polRing,chemSystem,constraints,paramValues,matrix(QQ,stoichMatrix),matrix(QQ,reconStoichMatrix),matrix(QQ,kineticMatrix));
     end
-    
+
     return system
 end
 
-end # module 
+end # module
