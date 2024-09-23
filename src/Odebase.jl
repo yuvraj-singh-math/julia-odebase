@@ -1,5 +1,8 @@
 module Odebase
 export odebaseSystems
+export get_odebase_system
+export generic_polynomial_system
+export valued_polynomial_system
 # TODO remove using Oscar from odebase files
 using Oscar;
 const dir = Base.pkgdir(Odebase)
@@ -44,8 +47,8 @@ end
 
 function generic_polynomial_system(sys::OdebaseNode;constraint=true)
     randCoeff=rand_nonzero(length(gens(sys.paramsRing)));
-    QQpolRing,tup=polynomial_ring(QQ,["$x" for x in gens(sys.polRing)]);
-    phi=hom(sys.polRing,QQpolRing,c->evaluate(c,randCoeff),gens(QQpolRing));
+    # QQpolRing,tup=polynomial_ring(QQ,["$x" for x in gens(sys.polRing)]);
+    phi=hom(sys.polRing,sys.polRing,c->evaluate(c,randCoeff),gens(sys.polRing));
     if constraint
         return phi.(union(sys.ODEs,sys.constraints))
     else
@@ -54,8 +57,8 @@ function generic_polynomial_system(sys::OdebaseNode;constraint=true)
 end
 
 function valued_polynomial_system(sys::OdebaseNode;constraint=true)
-    QQpolRing,tup=polynomial_ring(QQ,["$x" for x in gens(sys.polRing)]);
-    phi=hom(sys.polRing,QQpolRing,c->evaluate(c,sys.paramValues),gens(QQpolRing));
+    # QQpolRing,tup=polynomial_ring(QQ,["$x" for x in gens(sys.polRing)]);
+    phi=hom(sys.polRing,sys.polRing,c->evaluate(c,sys.paramValues),gens(sys.polRing));
     if constraint
         return phi.(union(sys.ODEs,sys.constraints))
     else
