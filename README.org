@@ -1,0 +1,34 @@
+#+title: OscarOdebase.jl
+#+author: Yuvraj Singh
+
+Todo: add a readme file that explains what this is and how users are supposed to use it.
+
+
+* Todos:
+
+** Complete Readme.org
+
+** Add functions for accessing fields, such as
+
+#+begin_src julia
+  function description(XXX::OdebaseNode)
+      return XXX.description
+  end
+#+end_src
+
+or
+
+#+begin_src julia
+  description(XXX::OdebaseNode) = XXX.description
+#+end_src
+
+** Add a custom print function, such as
+
+#+begin_src julia
+    import Base.show
+    function Base.show(io::IO, ::OdebaseNode)
+      print(io, "insert sensible things here")
+    end
+#+end_src
+
+Think of what information should be printed, e.g., "Entry "*foo.description*" of ODEbase with ..."
