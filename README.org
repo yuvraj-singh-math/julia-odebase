@@ -1,34 +1,41 @@
 #+title: OscarOdebase.jl
 #+author: Yuvraj Singh
 
-Todo: add a readme file that explains what this is and how users are supposed to use it.
+~OscarOdebase.jl~ is an unofficial Julia module providing access to scraped polynomial models of [[https://www.odebase.org/][ODEbase]] through the computer algebra system OSCAR.
 
-
-* Todos:
-
-** Complete Readme.org
-
-** Add functions for accessing fields, such as
-
+* Interface
+This module provides a function, ~get_odebase_system~ for importing a supported model from ODEbase into Julia. 
 #+begin_src julia
-  function description(XXX::OdebaseNode)
-      return XXX.description
-  end
+julia> using OscarOdebase;
+julia> model=get_odebase_system("BIOMD0000000854")
+Entry BIOMD0000000854, with 4 species and 11 parameters.
+Gray2016 - The Akt switch model
 #+end_src
+The array ~odebaseSystems~ provides the ID of every system that can be loaded into Julia.
 
-or
-
+Each model is of type ~OdebaseModel~, and carries all the information provided by ODEbase, including the ODEs, constraint equations, (reconfigured) stoichiometric and kinetic matrices. This can be accessed using the fields of the struct ~OdebaseModel~, as well as provided ~get_INFO~ functions, where ~INFO~ is the desired field of the struct:
 #+begin_src julia
-  description(XXX::OdebaseNode) = XXX.description
+julia> model.ODEs
+4-element Vector{AbstractAlgebra.Generic.MPoly{AbstractAlgebra.Generic.RationalFunctionFieldElem{QQFieldElem, QQMPolyRingElem}}}:
+ -k1*k3*x1 + k2*x2 + k1*x3
+ (-k1*k3 - k2)*x2 + k1*x4
+ k1*k3*x1 + (-k1 - k2*k5)*x3 + k2*x4
+ k1*k3*x2 + k2*k5*x3 + (-k1 - k2)*x4
+
+julia> get_ODEs(model)
+4-element Vector{AbstractAlgebra.Generic.MPoly{AbstractAlgebra.Generic.RationalFunctionFieldElem{QQFieldElem, QQMPolyRingElem}}}:
+ -k1*k3*x1 + k2*x2 + k1*x3
+ (-k1*k3 - k2)*x2 + k1*x4
+ k1*k3*x1 + (-k1 - k2*k5)*x3 + k2*x4
+ k1*k3*x2 + k2*k5*x3 + (-k1 - k2)*x4
 #+end_src
+All the provided objects listed above are given as types of objects from OSCAR. The ODEs are given as elements of a polynomial ring over a rational function field, and the matrices as matrices of type ~QQMatrix~. See the [[https://docs.oscar-system.org/][OSCAR documentation]] for more information.
+* Implementation
+This module supports, barring a few exceptions, every polynomial model in ODEbase. These exceptions arise due to exponentiating parameters by other parameters, which is functionality not provided by any object in OSCAR.
 
-** Add a custom print function, such as
 
-#+begin_src julia
-    import Base.show
-    function Base.show(io::IO, ::OdebaseNode)
-      print(io, "insert sensible things here")
-    end
-#+end_src
-
-Think of what information should be printed, e.g., "Entry "*foo.description*" of ODEbase with ..."
+* TODO Further features to implement
+- [ ] Functionality to use any provided field
+- [ ] Better integration of polynomials with OSCAR
+- [ ] Provide list of polynomial models that could not be imported
+- [ ] 
