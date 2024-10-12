@@ -1,0 +1,43 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: OscarODEbase.jl
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Yuvraj
+    family-names: Singh
+    email: yuvraj.singh@durham.ac.uk
+abstract: >-
+  OscarODEbase.jl is a Julia module containing ODEbase
+  models for use with OSCAR.
+references:
+  - authors:
+    - family-names: Lüders
+      given-names: Christoph
+    - family-names: Sturm
+      given-names: Thomas
+    - family-names: Radulescu
+      given-names: Ovidiu
+    title: ODEbase
+    type: generic
+  - authors:
+    - family-names: "Decker"
+      given-names: "Wolfram"
+    - family-names: "Eder"
+      given-names: "Christian"
+    - family-names: "Fieker"
+      given-names: "Claus"
+    - family-names: "Horn"
+      given-names: "Max"
+    - family-names: "Joswig"
+      given-names: "Michael"
+    type: software
+    title: OSCAR -- Open Source Computer Algebra Research system
+    identifiers:
+      - type: url
+        value: 'https://www.oscar-system.org'
+    repository-code: 'https://github.com/oscar-system/Oscar.jl'
