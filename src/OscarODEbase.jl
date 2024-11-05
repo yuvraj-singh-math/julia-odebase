@@ -19,7 +19,7 @@ using Oscar;
 using Base;
 const dir = Base.pkgdir(OscarODEbase)
 const chems=readdir(joinpath(dir,"src/odes/"),join=true)
-const ODEbaseNameModels=[splitext(basename(chem))[1] for chem in chems]
+const ODEbaseModels=[splitext(basename(chem))[1] for chem in chems]
 
 struct ODEbaseModel
     ID::String
@@ -128,5 +128,5 @@ function get_odebase_model(reqID::String; rename=false)
 
     return system
 end
-const ODEbaseModels=get_odebase_model.(ODEbaseNameModels)
+
 end # module
