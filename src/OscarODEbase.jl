@@ -44,6 +44,17 @@ struct ODEbaseModel
     kineticMatrix::QQMatrix
 end
 
+function get_reduced_sys(sys::Vector)
+    mons=unique(collect(Iterators.flatten([collect(monomials(f)) for f in sys])))
+    S = matrix_space(QQ, length(sys), length(mons))
+    M_list=collect(Iterators.flatten(([[QQ(coeff(f,m)) for m in mons] for f in sys])))
+    M=matrix(QQ,length(sys),length(mons),M_list)
+    rk,M=rref(M)
+    M=matrix(QQ,[M[i,:] for i in 1:rk])
+    new_sys=[sum([mons[j]*M[i,j] for j in 1:length(mons)]) for i in 1:rk]
+    return new_sys
+end
+
 function Base.show(io::IO, model::ODEbaseModel)
     id=model.ID
     desc=model.description
@@ -87,10 +98,14 @@ function rand_nonzero(len::Int)
     return ints
 end
 
-function generic_polynomial_system(model::ODEbaseModel;constraint=true)
+# reduce=true will set constraint=false
+function generic_polynomial_system(model::ODEbaseModel;constraint=false,reduce=false)
     randCoeff=rand_nonzero(length(gens(model.paramsRing)));
     QQpolRing,tup=polynomial_ring(QQ,["$x" for x in gens(model.polRing)]);
     phi=hom(model.polRing,QQpolRing,c->evaluate(c,randCoeff),tup);
+    if reduce
+        return get_reduced_sys(phi.(model.ODEs)), QQpolRing
+    end
     if constraint
         return phi.(union(model.ODEs,model.constraints)), QQpolRing
     else
@@ -98,9 +113,12 @@ function generic_polynomial_system(model::ODEbaseModel;constraint=true)
     end
 end
 
-function valued_polynomial_system(model::ODEbaseModel;constraint=true)
+function valued_polynomial_system(model::ODEbaseModel;constraint=false,reduce=false)
     QQpolRing,tup=polynomial_ring(QQ,["$x" for x in gens(model.polRing)]);
     phi=hom(model.polRing,QQpolRing,c->evaluate(c,model.paramValues),tup);
+    if reduce
+        return get_reduced_sys(phi.(models.ODEs)), QQpolRing
+    end
     if constraint
         return phi.(union(model.ODEs,model.constraints)), QQpolRing
     else
