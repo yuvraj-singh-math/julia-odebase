@@ -2,7 +2,7 @@
 
 julia_version = "1.11.1"
 manifest_format = "2.0"
-project_hash = "8b740061773b16927d7c21a4c4055ebcaaa84f41"
+project_hash = "29daf0acb1dc57abb18bf02ca29ac3bcb4f8c647"
 
 [[deps.ASL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -346,12 +346,6 @@ git-tree-sha1 = "1f0d7579d1bacc1446751990d7e0c4c0bf0f3277"
 uuid = "4fe8b98c-fc19-5c23-8ec2-168ff83495f2"
 version = "0.9.1"
 
-[[deps.MonomialTranslations]]
-deps = ["Oscar", "OscarODEbase"]
-path = "/Users/oliverdaisey/.julia/dev/MonomialTranslations"
-uuid = "d60a32c5-bd3d-42c6-935c-093780c956bc"
-version = "0.1.0"
-
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 version = "2023.12.12"
@@ -416,12 +410,6 @@ deps = ["AbstractAlgebra", "AlgebraicSolving", "Distributed", "GAP", "Hecke", "J
 git-tree-sha1 = "10aa8ba25928a5e761ea03ceb762775b87037108"
 uuid = "f1435218-dba5-11e9-1e4d-f1a5fab5fc13"
 version = "1.2.1"
-
-[[deps.OscarODEbase]]
-deps = ["MonomialTranslations", "Oscar", "Revise"]
-path = "/Users/oliverdaisey/Developer/julia-odebase"
-uuid = "88401393-7360-4a14-b6f5-9be096107163"
-version = "0.1.0"
 
 [[deps.PPL_jll]]
 deps = ["Artifacts", "GMP_jll", "JLLWrappers", "Libdl", "Pkg"]
