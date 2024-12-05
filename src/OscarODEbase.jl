@@ -17,7 +17,6 @@ export get_reconfigured_stoichiometric_matrix
 export get_kinetic_matrix
 # TODO remove using Oscar from odebase files
 using Oscar;
-using Base;
 const dir = Base.pkgdir(OscarODEbase)
 const chems=readdir(joinpath(dir,"src/odes/"),join=true)
 const ODEbaseModels=[splitext(basename(chem))[1] for chem in chems]
@@ -174,6 +173,9 @@ These are the indices of the steady state polynomials that we can replace with c
 function get_constraints_rref_pivots(model::ODEbaseModel)
     # Construct the coefficient matrix of the constraints
     constraints = first(get_constraints_generic_specialization(model)) # return is of form (constraints, polynomialRing)
+    if isempty(constraints)
+        return Int[]
+    end
     constraintsVariables = sort(unique(Iterators.flatten(collect.(monomials.(constraints))));rev=true)
     @req all(m -> total_degree(m) <= 1, constraintsVariables) "non-affine constraints"
     constraintsMatrix = matrix(coefficient_ring(first(constraints)), [[coeff(constraint,x) for x in constraintsVariables] for constraint in constraints])
@@ -196,7 +198,7 @@ function get_polynomials_random_specialization(model::ODEbaseModel; constraint=f
     QQpolRing,tup=polynomial_ring(QQ,symbols(get_polynomial_ring(model)));
     phi=hom(model.polRing,QQpolRing,c->evaluate(c,randCoeff),tup);
 
-    specializedODEs = phi.(gens(get_ODEs(model)))
+    specializedODEs = phi.(get_ODEs(model))
     if reduce
         constraintsPivots = get_constraints_rref_pivots(model)
         specializedODEs = [ode for (i,ode) in enumerate(specializedODEs) if !(i in constraintsPivots)]
@@ -237,6 +239,13 @@ end
 Given a model ID `reqID`, returns the corresponding `ODEbaseModel` object with this ID.
 
 If `rename` is set to `true`, then the variable and parameter definitions in the model file are renamed to avoid conflicts with existing variables in the global scope. This is useful when loading multiple models in the same session.
+
+# Examples
+```julia
+julia> get_odebase_model("BIOMD0000001031")
+Model BIOMD0000001031, with 3 species and 5 parameters.
+Al-Tuwairqi2020 - Dynamics of cancer virotherapy - Phase I treatment
+````
 """
 function get_odebase_model(reqID::String; rename=false)
     if !(reqID in ODEbaseModels)
