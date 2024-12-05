@@ -236,7 +236,7 @@ end
 """
     get_odebase_model(reqID::String; rename=false)
 
-Given a model ID `reqID`, returns the corresponding `ODEbaseModel` object with this ID.
+Given a model ID `reqID`, returns the corresponding `ODEbaseModel` object with this ID.  For a list of valid inputs, see the global list stored in `ODEbaseModels`.
 
 If `rename` is set to `true`, then the variable and parameter definitions in the model file are renamed to avoid conflicts with existing variables in the global scope. This is useful when loading multiple models in the same session.
 
