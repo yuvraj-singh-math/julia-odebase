@@ -213,14 +213,14 @@ end
 
 Returns a tuple where the first entry is a vector of the steady state polynomials of the given model with the parameters specialized to random values, and the second entry the specialization homomorphism.
 """
-function get_polynomials_random_specialization(model::ODEbaseModel; constraint=false, reduce=false)
+function get_polynomials_random_specialization(model::ODEbaseModel; constraint=false, reduce=false, useGenericSpecializationOfConstraints::Bool=false)
     randCoeff=rand_nonzero(length(gens(get_parameter_ring(model))));
     QQpolRing,tup=polynomial_ring(QQ,symbols(get_polynomial_ring(model)));
     phi=hom(model.polRing,QQpolRing,c->evaluate(c,randCoeff),tup);
 
     specializedODEs = phi.(get_ODEs(model))
     if reduce
-        constraintsPivots = get_constraints_rref_pivots(model)
+        constraintsPivots = get_constraints_rref_pivots(model,useGenericSpecializationOfConstraints)
         specializedODEs = [ode for (i,ode) in enumerate(specializedODEs) if !(i in constraintsPivots)]
     end
     if constraint
