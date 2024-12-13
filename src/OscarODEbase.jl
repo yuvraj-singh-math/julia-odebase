@@ -9,6 +9,7 @@ export get_description
 export get_ODEs
 export get_constraints
 export get_constraints_generic_specialization
+export get_constraints_random_specialization
 export get_polynomial_ring
 export get_parameter_ring
 export get_deficiency
@@ -164,15 +165,34 @@ function get_constraints_generic_specialization(model::ODEbaseModel)
 end
 
 """
+    get_constraints_random_specialization(model::ODEbaseModel)
+
+Returns a tuple containing the constraints of the given model specialized to a random QQ choice of parameter values, along with the specialization homomorphism.
+"""
+function get_constraints_random_specialization(model::ODEbaseModel)
+    constraints = get_constraints(model)
+    polynomialRing = get_polynomial_ring(model)
+    parameterRing = get_parameter_ring(model)
+    R,x = polynomial_ring(QQ, symbols(polynomialRing))
+    # Specialize the parameters to random values
+    phi = hom(polynomialRing, R, c -> rand_nonzero(1)[1]//rand_nonzero(1)[1], x)
+    return phi.(constraints), phi
+end
+
+"""
     get_constraints_rref_pivots(model::ODEbaseModel)
 
-Returns a vector of the indices of the columns of the constraint matrix that arise as pivots when computing the RREF.
+Returns a vector of the indices of the columns of the constraint matrix that arise as pivots when computing the RREF. The optional argument `useGenericSpecialization` specifies whether to use the generic specialization of the parameters, or to set them to random rationals.
 
 These are the indices of the steady state polynomials that we can replace with constraint equations.
 """
-function get_constraints_rref_pivots(model::ODEbaseModel)
+function get_constraints_rref_pivots(model::ODEbaseModel, useGenericSpecialization::Boolean=false)
     # Construct the coefficient matrix of the constraints
-    constraints = first(get_constraints_generic_specialization(model)) # return is of form (constraints, polynomialRing)
+    if useGenericSpecialization
+        constraints = first(get_constraints_generic_specialization(model))
+    else
+        constraints = first(get_constraints_random_specialization(model))
+    end
     if isempty(constraints)
         return Int[]
     end
