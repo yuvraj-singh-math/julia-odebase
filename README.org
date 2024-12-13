@@ -36,9 +36,10 @@ julia> get_ODEs(model)
  k1*k3*x1 + (-k1 - k2*k5)*x3 + k2*x4
  k1*k3*x2 + k2*k5*x3 + (-k1 - k2)*x4
 #+end_src
-The polynomials generating this ideal can be obtained using ~gens~. To manipulate the ODEs as polynomials, it may be required to manually bring the variables into scope. This can be done as follows:
+To manipulate the steady state polynomials, it may be required to manually bring the variables into scope. This can be done as follows:
 
 #+begin_src julia
+julia> using Oscar;
 julia> model=get_odebase_model("BIOMD0000000854");
 julia> R=model.polRing;
 julia> (x1,x2,x3,x4)=gens(R)
