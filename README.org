@@ -4,6 +4,10 @@ OscarODEbase.jl is a Julia module containing almost all polynomial models of [[h
 * Installing OscarODEbase.jl
 To install OscarODEbase.jl:
 #+begin_src
+julia> Pkg.add(url="https://github.com/yuvraj-singh-math/julia-odebase.git")
+#+end_src
+alternatively, use SSH:
+#+begin_src
 julia> Pkg.add(url="git@github.com:yuvraj-singh-math/julia-odebase.git")
 #+end_src
 * Using OscarODEbase.jl
