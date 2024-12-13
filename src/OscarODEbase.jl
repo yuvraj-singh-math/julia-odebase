@@ -186,7 +186,7 @@ Returns a vector of the indices of the columns of the constraint matrix that ari
 
 These are the indices of the steady state polynomials that we can replace with constraint equations.
 """
-function get_constraints_rref_pivots(model::ODEbaseModel, useGenericSpecialization::Boolean=false)
+function get_constraints_rref_pivots(model::ODEbaseModel, useGenericSpecialization::Bool=false)
     # Construct the coefficient matrix of the constraints
     if useGenericSpecialization
         constraints = first(get_constraints_generic_specialization(model))
