@@ -14,7 +14,7 @@ julia> model=get_odebase_model("BIOMD0000000854")
 Entry BIOMD0000000854, with 4 species and 11 parameters.
 Gray2016 - The Akt switch model
 #+end_src
-The global variable ~ODEbaseModels~ provides the ID of every system that can be loaded into Julia.
+The global variable ~odebaseModels~ provides the ID of every system that can be loaded into Julia.
 #+begin_src julia
 julia> odebaseSystems
 190-element Vector{String}:
