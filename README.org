@@ -23,7 +23,7 @@ julia> odebaseSystems
  "BIOMD0000001038"
 #+end_src
 Each model is of type ~ODEbaseModel~, and carries all the information provided by ODEbase, which can be accessed using provided ~get_INFO~ functions, where ~INFO~ is the desired information: For example:
-- the ideal of ODEs ~get_ODEs(::ODEbaseModel)~,
+- the steady state equations of the ODEs ~get_ODEs(::ODEbaseModel)~,
 - constraint equations ~get_constraints(::ODEbaseModel)~,
 - (reconfigured) stoichiometric matrices ~get_stoich(::ODEbaseModel)~ (~get_reconStoich(::OdebaseModel)~),
 - kinetic matrices ~get_kinetic(::ODEbaseModel)~.
