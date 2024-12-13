@@ -51,7 +51,7 @@ julia> (x1,x2,x3,x4)=gens(R)
 
 All the provided objects listed above are given as types of objects from OSCAR. The ODEs are given as elements of a polynomial ring over a rational function field, and the matrices as matrices of type ~QQMatrix~. See the [[https://docs.oscar-system.org/][OSCAR documentation]] for more information.
 
-For example, to change the coefficient field to $\mathbb{F}_{5}$, the ~hom~ function can be used:
+To change the coefficient field to e.g. $\mathbb{F}_{5}$, the ~hom~ function can be used.
 
 *Warning*: In order to use OscarODEbase in another module, it is necessary to include any calls to ~get_odebase_model~ in ~__init__()~, see https://github.com/Nemocas/Nemo.jl/issues/810.
 * Models in OscarODEbase.jl
