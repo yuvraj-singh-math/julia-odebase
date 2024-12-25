@@ -237,9 +237,9 @@ end
 Returns a tuple where the first entry is a vector of the steady state polynomials of the given model with the parameters specialized to the fixed values specified in ODEbase, and the second entry the specialization homomorphism.
 """
 function get_polynomials_fixed_specialization(model::ODEbaseModel;constraint=false,reduce=false)
-    QQpolRing,tup=polynomial_ring(QQ,symbols(polynomial_ring(model)));
+    QQpolRing,tup=polynomial_ring(QQ,symbols(get_polynomial_ring(model)));
     phi=hom(model.polRing,QQpolRing,c->evaluate(c,get_fixed_parameter_values(model)),tup);
-    specializedODEs = phi.(gens(get_ODEs(model)))
+    specializedODEs = phi.(get_ODEs(model))
 
     if reduce
         constraintsPivots = get_constraints_rref_pivots(model)
